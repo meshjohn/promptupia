@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Form from "@components/Form";
-
+import { mutate } from "swr";
 const EditPrompt = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -37,6 +37,7 @@ const EditPrompt = () => {
         }),
       });
       if (response.ok) {
+        mutate('/api/prompt');
         router.push("/");
       }
     } catch (error) {
