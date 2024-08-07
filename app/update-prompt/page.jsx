@@ -1,18 +1,20 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";  // Note: Use `next/router` for `useRouter`
 import Form from "@components/Form";
 import { mutate } from "swr";
+
 const EditPrompt = () => {
-  const searchParams = useSearchParams();
   const router = useRouter();
-  const promptId = searchParams.get("id");
+  const { query } = router;  // Access query parameters from router.query
+  const promptId = query.id;
   const [submitting, setSubmitting] = useState(false);
   const [post, setPost] = useState({
     prompt: "",
     tag: "",
   });
+
   useEffect(() => {
     const getPromptDetails = async () => {
       const response = await fetch(`/api/prompt/${promptId}`);
@@ -24,10 +26,11 @@ const EditPrompt = () => {
     };
     if (promptId) getPromptDetails();
   }, [promptId]);
+
   const updatePrompt = async (e) => {
     e.preventDefault();
     setSubmitting(true);
-    if (!promptId) return alert("promt ID not found");
+    if (!promptId) return alert("Prompt ID not found");
     try {
       const response = await fetch(`/api/prompt/${promptId}`, {
         method: "PATCH",
@@ -37,7 +40,7 @@ const EditPrompt = () => {
         }),
       });
       if (response.ok) {
-        mutate('/api/prompt');
+        mutate('/api/prompt');  // Invalidate the cache for the prompts list
         router.push("/");
       }
     } catch (error) {
@@ -46,6 +49,7 @@ const EditPrompt = () => {
       setSubmitting(false);
     }
   };
+
   return (
     <Form
       type="Edit"
